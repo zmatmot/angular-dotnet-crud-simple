@@ -1,0 +1,14 @@
+# .gitignore
+# Frontend
+frontend-app/node_modules/
+frontend-app/dist/
+frontend-app/.angular/
+
+# Backend
+**/bin/
+**/obj/
+*.db
+*.db-journal
+
+# VS Code
+.vscode/
