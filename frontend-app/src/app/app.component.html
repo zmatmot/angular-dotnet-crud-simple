@@ -1,43 +1,92 @@
 <div class="container mt-5">
-  <div class="row">
-    <div class="col-md-4">
-      <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-          <h5 class="mb-0">Add User</h5>
+  
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-bold" (click)="toggleTheme()">
+      {{ isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode' }}
+    </button>
+  </div>
+
+  <ul class="nav nav-pills justify-content-center mb-5">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="currentView === 'form'" (click)="currentView = 'form'" style="cursor: pointer;">
+        📝 Registration Form
+      </a>
+    </li>
+    <li class="nav-item ms-3">
+      <a class="nav-link" [class.active]="currentView === 'table'" (click)="currentView = 'table'" style="cursor: pointer;">
+        🔒 Admin Dashboard
+      </a>
+    </li>
+  </ul>
+
+  <div class="row justify-content-center">
+    
+    <div class="col-md-6" *ngIf="currentView === 'form'">
+      <div class="card shadow border-0">
+        <div class="card-header" [ngClass]="isEditing ? 'text-bg-warning' : 'text-bg-primary'">
+          <h5 class="mb-0">{{ isEditing ? 'Edit User' : 'Register New User' }}</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
+          
           <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
           
           <div class="mb-3">
-            <label class="form-label">Username</label>
-            <input type="text" class="form-control" [(ngModel)]="newUser.username">
+            <label class="form-label fw-bold">Username</label>
+            <input type="text" class="form-control" [(ngModel)]="newUser.username" placeholder="Enter username">
           </div>
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-control" [(ngModel)]="newUser.email">
+          
+          <div class="mb-4">
+            <label class="form-label fw-bold">Email</label>
+            <input type="email" class="form-control" [(ngModel)]="newUser.email" placeholder="Enter email" #emailRef="ngModel" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$">
+            
+            <div *ngIf="emailRef.invalid && (emailRef.dirty || emailRef.touched)" class="text-danger mt-1" style="font-size: 0.85em;">
+              Please enter a valid email address.
+            </div>
           </div>
-          <button class="btn btn-primary w-100" (click)="addUser()">Save</button>
+          
+          <div class="d-flex gap-2">
+            <button class="btn flex-grow-1" [ngClass]="isEditing ? 'btn-warning' : 'btn-success'" (click)="saveUser()">
+              {{ isEditing ? 'Update User' : 'Save User' }}
+            </button>
+            <button *ngIf="isEditing" class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="col-md-8">
-      <table class="table table-bordered table-striped shadow-sm">
-        <thead class="table-dark">
-          <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let user of users">
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="col-md-10" *ngIf="currentView === 'table'">
+      <div class="card shadow border-0">
+        <div class="card-header text-bg-dark d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">User Database</h5>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th class="ps-4">ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th class="text-end pe-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of users">
+                <td class="ps-4">{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td class="text-end pe-4">
+                  <button class="btn btn-sm btn-outline-primary me-2" (click)="editUser(user)">Edit</button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteUser(user.id)">Delete</button>
+                </td>
+              </tr>
+              <tr *ngIf="users.length === 0">
+                <td colspan="4" class="text-center text-muted py-4">No users found in the database.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
+    
   </div>
 </div>
